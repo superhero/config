@@ -23,7 +23,7 @@ npm install @superhero/config
 
 ### Import and Setup
 
-#### Resolving Config Dependencies Manually
+#### Resolving Dependencies Manually
 
 ```javascript
 import Config from '@superhero/config';
@@ -36,7 +36,7 @@ const pathResolver = new PathResolver();
 const config = new Config(deepassign, deepclone, deepfreeze, pathResolver);
 ```
 
-#### Or just locate the servcie using the Service Locator
+#### Resolve Dependencies using the Service Locator
 
 ```javascript
 import locator from '@superhero/locator';
