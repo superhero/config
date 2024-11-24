@@ -26,10 +26,10 @@ npm install @superhero/config
 #### Resolving Dependencies Manually
 
 ```javascript
-import Config from '@superhero/config';
-import deepassign from '@superhero/deep/assign';
-import deepclone from '@superhero/deep/clone';
-import deepfreeze from '@superhero/deep/freeze';
+import Config       from '@superhero/config';
+import deepassign   from '@superhero/deep/assign';
+import deepclone    from '@superhero/deep/clone';
+import deepfreeze   from '@superhero/deep/freeze';
 import PathResolver from '@superhero/path-resolver';
 
 const pathResolver = new PathResolver();
@@ -175,11 +175,11 @@ const port = config.find('server/port');
 console.log(`Server running on port ${port}`);
 
 // Access unset configuration
-console.log(config.find('app/name')); // log: undefined 
+console.log(config.find('app/name')); // ⇠ undefined 
 
 // Assign new configuration
 config.assign({ app: { name: 'MyApp' } });
-console.log(config.find('app/name')); // log: MyApp
+console.log(config.find('app/name')); // ⇠ MyApp
 
 // Freeze configurations
 config.freeze();
