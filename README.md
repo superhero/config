@@ -1,5 +1,5 @@
 
-# @superhero/config
+# Config
 
 A configuration manager for Node.js applications, designed to handle dynamic loading, seamless deep assignment of new properties, and to freez the configurations once considered finalized. The module supports configuration files written both using JavaScript and JSON, and supports branch-specific configurations.
 
@@ -54,7 +54,8 @@ await config.add('/absolute/path/to/config/directory');
 #### Add Branch-Specific Configuration
 
 ```javascript
-await config.add('/absolute/path/to/config/directory', 'dev'); // Resolves config-dev.json or config-dev.js (.mjs/.cjs)
+// Resolves config-dev.json or config-dev.js (.mjs/.cjs)
+await config.add('/absolute/path/to/config/directory', 'dev'); 
 ```
 
 ### Retrieve Configuration
