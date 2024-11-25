@@ -39,11 +39,8 @@ suite('@superhero/config', () =>
 
   beforeEach(() =>
   {
-    config = new Config(
-      deepassign,
-      deepclone,
-      deepfreeze,
-      new PathResolver)
+    const pathResolver = new PathResolver()
+    config = new Config(deepassign, deepclone, deepfreeze, pathResolver)
   })
 
   test('Can be located', async () =>

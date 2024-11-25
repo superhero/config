@@ -1,6 +1,6 @@
 {
   "name": "@superhero/config",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Configuration manager",
   "main": "index.js",
   "license": "MIT",

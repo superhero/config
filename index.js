@@ -1,15 +1,13 @@
 import fs           from 'node:fs/promises'
 import path         from 'node:path'
 import PathResolver from '@superhero/path-resolver'
+import deepassign   from '@superhero/deep/assign'
+import deepclone    from '@superhero/deep/clone'
+import deepfreeze   from '@superhero/deep/freeze'
 
 export function locate(locator)
 {
-  const
-    deepassign    = locator.locate('@superhero/deep/assign'),
-    deepclone     = locator.locate('@superhero/deep/clone'),
-    deepfreeze    = locator.locate('@superhero/deep/freeze'),
-    pathResolver  = new PathResolver()
-
+  const pathResolver = new PathResolver()
   return new Config(deepassign, deepclone, deepfreeze, pathResolver)
 }
 
