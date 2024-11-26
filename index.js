@@ -5,33 +5,20 @@ import deepassign   from '@superhero/deep/assign'
 import deepclone    from '@superhero/deep/clone'
 import deepfreeze   from '@superhero/deep/freeze'
 
-export function locate(locator)
+export function locate()
 {
-  const pathResolver = new PathResolver()
-  return new Config(deepassign, deepclone, deepfreeze, pathResolver)
+  return new Config()
 }
 
 export default class Config
 {
-  #config = {}
-  #frozen = false
+  #pathResolver = new PathResolver()
+  #config       = {}
+  #frozen       = false
 
   get isFrozen()
   {
     return this.#frozen
-  }
-
-  #deepassign
-  #deepclone
-  #deepfreeze
-  #pathResolver
-
-  constructor(deepassign, deepclone, deepfreeze, pathResolver)
-  {
-    this.#deepassign    = deepassign
-    this.#deepclone     = deepclone
-    this.#deepfreeze    = deepfreeze
-    this.#pathResolver  = pathResolver
   }
 
   find(configPath)
@@ -51,14 +38,14 @@ export default class Config
     }
     else
     {
-      const clone = this.#deepclone.clone(config)
-      this.#deepassign.assign(this.#config, clone)
+      const clone = deepclone.clone(config)
+      deepassign.assign(this.#config, clone)
     }
   }
 
   freeze()
   {
-    this.#deepfreeze.freeze(this.#config)
+    deepfreeze.freeze(this.#config)
     this.#frozen = true
   }
 
@@ -112,8 +99,10 @@ export default class Config
 
     const files = await fs.readdir(dirpath)
 
-    for(const file of [`config${branch}.js`, `config${branch}.mjs`, `config${branch}.cjs`])
+    for(const suffix of ['js', 'mjs', 'cjs'])
     {
+      const file = `config${branch}.${suffix}`
+
       if(files.includes(file))
       {
         const 

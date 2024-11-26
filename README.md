@@ -21,22 +21,14 @@ npm install @superhero/config
 
 ## Usage
 
-### Import and Setup
-
-#### Resolving Dependencies Manually
+### Import
 
 ```javascript
-import Config       from '@superhero/config';
-import deepassign   from '@superhero/deep/assign';
-import deepclone    from '@superhero/deep/clone';
-import deepfreeze   from '@superhero/deep/freeze';
-import PathResolver from '@superhero/path-resolver';
-
-const pathResolver = new PathResolver();
-const config = new Config(deepassign, deepclone, deepfreeze, pathResolver);
+import Config from '@superhero/config';
+const config = new Config();
 ```
 
-#### Resolve Dependencies using the Service Locator
+Or resolve using the service locator.
 
 ```javascript
 import locator from '@superhero/locator';
@@ -48,14 +40,14 @@ const config = await locator.lazyload('@superhero/config');
 #### Add Configuration File
 
 ```javascript
-await config.add('/absolute/path/to/config/directory');
+await config.add('./config/directory');
 ```
 
 #### Add Branch-Specific Configuration
 
 ```javascript
 // Resolves config-dev.json or config-dev.js (.mjs/.cjs)
-await config.add('/absolute/path/to/config/directory', 'dev'); 
+await config.add('./config/directory', 'dev'); 
 ```
 
 ### Retrieve Configuration
@@ -157,18 +149,12 @@ Indicates if the configuration is in a frozen state.
 ```javascript
 import locator from '@superhero/locator';
 
-await locator.eagerload([
-  '@superhero/deep/assign',
-  '@superhero/deep/clone',
-  '@superhero/deep/freeze',
-  '@superhero/config',
-]);
-
-const config = locator.locate('@superhero/config');
+// Locate the config instance
+const config = await locator.lazyload('@superhero/config');
 
 // Load configurations
-await config.add('/absolute/path/to/config/directory');
-await config.add('/absolute/path/to/config/directory', 'dev');
+await config.add('./config/directory');
+await config.add('./config/directory', 'dev');
 
 // Access configuration
 const port = config.find('server/port');
@@ -231,10 +217,10 @@ pass 12
 ----------------------------------------------------------------
 file            | line % | branch % | funcs % | uncovered lines
 ----------------------------------------------------------------
-index.js        |  95.65 |    92.59 |  100.00 | 87-92
+index.js        |  95.20 |    92.31 |  100.00 | 72-77
 index.test.js   | 100.00 |   100.00 |  100.00 | 
 ----------------------------------------------------------------
-all files       |  97.98 |    96.30 |  100.00 | 
+all files       |  97.79 |    96.23 |  100.00 | 
 ----------------------------------------------------------------
 ```
 

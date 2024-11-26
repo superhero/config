@@ -1,24 +1,18 @@
-import assert       from 'node:assert'
-import path         from 'node:path'
-import fs           from 'node:fs/promises'
-import locator      from '@superhero/locator'
-import Config       from '@superhero/config'
-import deepassign   from '@superhero/deep/assign'
-import deepclone    from '@superhero/deep/clone'
-import deepfreeze   from '@superhero/deep/freeze'
-import PathResolver from '@superhero/path-resolver'
+import assert   from 'node:assert'
+import path     from 'node:path'
+import fs       from 'node:fs/promises'
+import Locator  from '@superhero/locator'
+import Config   from '@superhero/config'
 import { suite, test, before, after, beforeEach } from 'node:test'
 
 suite('@superhero/config', () => 
 {
   const
-    testDir         = path.resolve('./test'),
+    testDir         = './test',
     configDir       = `${testDir}/config`,
     configFile      = `${configDir}/config.js`,
     configFileDev   = `${configDir}/config-dev.json`,
     configFileJson  = `${configDir}/json/config.json`
-
-  let config
 
   before(async () =>
   {
@@ -37,21 +31,17 @@ suite('@superhero/config', () =>
     await fs.rm(testDir, { recursive: true, force: true })
   })
 
+  let config, locator
+
   beforeEach(() =>
   {
-    const pathResolver = new PathResolver()
-    config = new Config(deepassign, deepclone, deepfreeze, pathResolver)
+    locator = new Locator()
+    config  = new Config()
   })
 
   test('Can be located', async () =>
   {
-    await locator.eagerload(
-    {
-      '@superhero/deep/assign'  : true,
-      '@superhero/deep/clone'   : true,
-      '@superhero/deep/freeze'  : true,
-      '@superhero/config'       : path.resolve('./index.js')
-    })
+    await locator.eagerload({'@superhero/config': path.resolve('./index.js')})
     assert.ok(locator.locate('@superhero/config'), 'Should be able to locate the config service')
   })
 
