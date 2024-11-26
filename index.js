@@ -13,9 +13,10 @@ export function locate()
 
 export default class Config
 {
-  #pathResolver = new PathResolver()
-  #config       = {}
-  #frozen       = false
+  pathResolver = new PathResolver()
+
+  #config = {}
+  #frozen = false
 
   get isFrozen()
   {
@@ -69,7 +70,7 @@ export default class Config
       const
         resolveFile       = this.#resolveFile.bind(this, branch),
         resolveDirectory  = this.#resolveDirectory.bind(this, branch),
-        config            = await this.#pathResolver.resolve(configpath, resolveFile, resolveDirectory)
+        config            = await this.pathResolver.resolve(configpath, resolveFile, resolveDirectory)
 
       if(config)
       {
