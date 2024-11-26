@@ -157,5 +157,13 @@ suite('@superhero/config', () =>
       assert.notStrictEqual(result, 'fallback', 'Should not have returned the fallback value')
       assert.strictEqual(result, 'TestApp', 'Should return configured value')
     })
+
+    test('Use fallback value to complement configured data structure', async () =>
+    {
+      await config.add(configFileJson)
+      const result = config.find('app', { name: false, foo: 'bar' })
+      assert.ok(result.name, 'Should have returned original value')
+      assert.ok(result.foo, 'Should have complemented with new fallback attribute')
+    })
   })
 })

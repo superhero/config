@@ -4,6 +4,7 @@ import PathResolver from '@superhero/path-resolver'
 import deepassign   from '@superhero/deep/assign'
 import deepclone    from '@superhero/deep/clone'
 import deepfreeze   from '@superhero/deep/freeze'
+import deepmerge    from '@superhero/deep/merge'
 
 export function locate()
 {
@@ -30,7 +31,7 @@ export default class Config
   {
     // split by unescaped dots or slashes
     const keys = configPath.split(/(?<!\\)[\.\/]/).map(key => key.replace(/\\([\.\/])/g, '$1'))
-    return keys.reduce((obj, key) => obj && obj[key], this.#config) ?? fallback
+    return deepmerge.merge(fallback, keys.reduce((obj, key) => obj && obj[key], this.#config))
   }
 
   assign(config)

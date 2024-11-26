@@ -161,15 +161,20 @@ await config.add('./config/directory', 'dev');
 const port = config.find('server/port');
 console.log(`Server running on port ${port}`);
 
-// Access unset configuration
-console.log(config.find('app/name')); // ⇠ undefined 
+// Access undefined configuration
+console.log(config.find('foo/bar')); // ⇠ undefined 
+
+// Return fallback if path is undefined
+console.log(config.find('foo/bar', 'baz')); // ⇠ baz
 
 // Assign new configuration
-config.assign({ app: { name: 'MyApp' } });
-console.log(config.find('app/name')); // ⇠ MyApp
+config.assign({ foo: { bar: 'baz' } });
 
-// Return fallback if path is not configured
-console.log(config.find('foo/bar', 'baz')); // ⇠ baz
+// Returns configured value
+console.log(config.find('foo/bar')); // ⇠ baz
+
+// Returns configured value with complemented fallback values
+console.log(config.find('app', { bar: false, baz: 'qux' })); // ⇠ { bar: 'baz', baz: 'qux' }
 
 // Freeze configurations
 config.freeze();
@@ -217,22 +222,22 @@ node test
     ✔ Return undefined for nonexistent keys (3.146199ms)
     ✔ Return fallback value for nonexistent keys (1.76582ms)
     ✔ Do not use the fallback value if key exists in the config (1.406302ms)
+    ✔ Use fallback value to complement configured data structure (1.745534ms)
   ✔ find() (15.638597ms)
 ✔ @superhero/config (52.585458ms)
 
-tests 14
+tests 15
 suites 5
-pass 14
+pass 15
 
 ----------------------------------------------------------------
 file            | line % | branch % | funcs % | uncovered lines
 ----------------------------------------------------------------
-index.js        |  95.38 |    92.59 |  100.00 | 77-82
+index.js        |  95.42 |    92.31 |  100.00 | 78-83
 index.test.js   | 100.00 |   100.00 |  100.00 | 
 ----------------------------------------------------------------
-all files       |  97.94 |    96.43 |  100.00 | 
+all files       |  98.00 |    96.43 |  100.00 | 
 ----------------------------------------------------------------
-end of coverage report
 ```
 
 ---
