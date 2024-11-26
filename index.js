@@ -21,11 +21,16 @@ export default class Config
     return this.#frozen
   }
 
-  find(configPath)
+  /**
+   * @param {string} configPath
+   * @param {any}    [fallback] if no value was found, then the fallback value is returned
+   * @returns {any}
+   */
+  find(configPath, fallback)
   {
     // split by unescaped dots or slashes
     const keys = configPath.split(/(?<!\\)[\.\/]/).map(key => key.replace(/\\([\.\/])/g, '$1'))
-    return keys.reduce((obj, key) => obj && obj[key], this.#config)
+    return keys.reduce((obj, key) => obj && obj[key], this.#config) ?? fallback
   }
 
   assign(config)

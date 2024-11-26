@@ -142,5 +142,20 @@ suite('@superhero/config', () =>
       const result = config.find('app/nonexistent/path/and/avalue')
       assert.strictEqual(result, undefined, 'Should return undefined for nonexistent keys')
     })
+
+    test('Return fallback value for nonexistent keys', async () =>
+    {
+      await config.add(configFileJson)
+      const result = config.find('app/nonexistent/path/and/avalue', 'fallback')
+      assert.strictEqual(result, 'fallback', 'Should return "fallback" for nonexistent keys')
+    })
+
+    test('Do not use the fallback value if key exists in the config', async () =>
+    {
+      await config.add(configFileJson)
+      const result = config.find('app/name', 'fallback')
+      assert.notStrictEqual(result, 'fallback', 'Should not have returned the fallback value')
+      assert.strictEqual(result, 'TestApp', 'Should return configured value')
+    })
   })
 })

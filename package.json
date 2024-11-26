@@ -1,7 +1,10 @@
 {
   "name": "@superhero/config",
-  "version": "4.0.2",
-  "description": "Configuration manager",
+  "version": "4.0.3",
+  "description": "Manager for a single or multiple configuration files",
+  "keywords": [
+    "configuration manager"
+  ],
   "main": "index.js",
   "license": "MIT",
   "type": "module",
@@ -10,7 +13,7 @@
   },
   "dependencies": {
     "@superhero/deep": "^4.0.0",
-    "@superhero/path-resolver": "^4.0.0"
+    "@superhero/path-resolver": "^4.0.1"
   },
   "devDependencies": {
     "@superhero/locator": "^4.0.0"

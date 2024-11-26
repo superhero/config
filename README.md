@@ -116,10 +116,11 @@ Throws:
 
 ---
 
-### `find(configPath: string): any`
+### `find(configPath: string, fallback?: any): any`
 Retrieves a nested configuration value using dot or slash notation.
 
 - `configPath`: Path to the configuration value.
+- `fallback`: Optional fallback value if path is undefined.
 
 Returns:
 - The value at the specified path or `undefined` if not found.
@@ -167,8 +168,14 @@ console.log(config.find('app/name')); // ⇠ undefined
 config.assign({ app: { name: 'MyApp' } });
 console.log(config.find('app/name')); // ⇠ MyApp
 
+// Return fallback if path is not configured
+console.log(config.find('foo/bar', 'baz')); // ⇠ baz
+
 // Freeze configurations
 config.freeze();
+
+// Assign new configurations throws
+config.assign({ app: { name: 'Noop' } }); // ⇠ throws E_CONFIG_FROZEN
 ```
 
 ---
@@ -185,43 +192,47 @@ node test
 
 ```
 ▶ @superhero/config
-  ✔ Can be located (5.073056ms)
+  ✔ Can be located (4.861409ms)
 
   ▶ add()
-    ✔ Add a JS config file (4.526138ms)
-    ✔ Add a JSON config file (2.21248ms)
-    ✔ Add a branch-specific config file (3.396125ms)
-    ✔ Throw an error when config file is not found (2.299683ms)
-  ✔ add() (13.046408ms)
+    ✔ Add a JS config file (3.818644ms)
+    ✔ Add a JSON config file (4.929281ms)
+    ✔ Add a branch-specific config file (2.334197ms)
+    ✔ Throw an error when config file is not found (1.716244ms)
+  ✔ add() (13.529981ms)
 
   ▶ assign()
-    ✔ Assign new configuration into existing config (0.245555ms)
-    ✔ Overwrite existing keys during assign (2.576057ms)
-  ✔ assign() (3.394969ms)
+    ✔ Assign new configuration into existing config (0.518567ms)
+    ✔ Overwrite existing keys during assign (0.485986ms)
+  ✔ assign() (1.402759ms)
 
   ▶ freeze()
-    ✔ Freeze the configuration (0.771527ms)
-    ✔ Throw an error when trying to add after freezing (0.467506ms)
-  ✔ freeze() (1.398923ms)
+    ✔ Freeze the configuration (0.569616ms)
+    ✔ Throw an error when trying to add after freezing (0.465048ms)
+  ✔ freeze() (1.259649ms)
 
   ▶ find()
-    ✔ Find a value in the configuration using slash notation (3.728731ms)
-    ✔ Find a value in the configuration using dot notation (2.015125ms)
-    ✔ Return undefined for nonexistent keys (2.752519ms)
-  ✔ find() (8.807871ms)
-✔ @superhero/config (47.186253ms)
+    ✔ Find a value in the configuration using slash notation (5.097338ms)
+    ✔ Find a value in the configuration using dot notation (3.480747ms)
+    ✔ Return undefined for nonexistent keys (3.146199ms)
+    ✔ Return fallback value for nonexistent keys (1.76582ms)
+    ✔ Do not use the fallback value if key exists in the config (1.406302ms)
+  ✔ find() (15.638597ms)
+✔ @superhero/config (52.585458ms)
 
-tests 12
-pass 12
+tests 14
+suites 5
+pass 14
 
 ----------------------------------------------------------------
 file            | line % | branch % | funcs % | uncovered lines
 ----------------------------------------------------------------
-index.js        |  95.20 |    92.31 |  100.00 | 72-77
+index.js        |  95.38 |    92.59 |  100.00 | 77-82
 index.test.js   | 100.00 |   100.00 |  100.00 | 
 ----------------------------------------------------------------
-all files       |  97.79 |    96.23 |  100.00 | 
+all files       |  97.94 |    96.43 |  100.00 | 
 ----------------------------------------------------------------
+end of coverage report
 ```
 
 ---
