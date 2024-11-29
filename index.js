@@ -1,10 +1,7 @@
 import fs           from 'node:fs/promises'
 import path         from 'node:path'
+import deep         from '@superhero/deep'
 import PathResolver from '@superhero/path-resolver'
-import deepassign   from '@superhero/deep/assign'
-import deepclone    from '@superhero/deep/clone'
-import deepfreeze   from '@superhero/deep/freeze'
-import deepmerge    from '@superhero/deep/merge'
 
 export function locate()
 {
@@ -32,7 +29,7 @@ export default class Config
   {
     // split by unescaped dots or slashes
     const keys = configPath.split(/(?<!\\)[\.\/]/).map(key => key.replace(/\\([\.\/])/g, '$1'))
-    return deepmerge.merge(fallback, keys.reduce((obj, key) => obj && obj[key], this.#config))
+    return deep.merge(fallback, keys.reduce((obj, key) => obj && obj[key], this.#config))
   }
 
   assign(config)
@@ -45,14 +42,14 @@ export default class Config
     }
     else
     {
-      const clone = deepclone.clone(config)
-      deepassign.assign(this.#config, clone)
+      const clone = deep.clone(config)
+      deep.assign(this.#config, clone)
     }
   }
 
   freeze()
   {
-    deepfreeze.freeze(this.#config)
+    deep.freeze(this.#config)
     this.#frozen = true
   }
 
