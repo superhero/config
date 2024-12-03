@@ -51,13 +51,17 @@ export default class Config
    */
   findAbsoluteDirPathByConfigEntry(configPath, configValue)
   {
+    const hasValue = configValue instanceof Array
+              ? (value) => value instanceof Array && configValue.every((input) => value.includes(input))
+              : (value) => value === configValue
+
     let absoluteDirPath
 
     for(const [ dirpath, config ] of this.#layers.entries())
     {
       const value = this.findInObj(config, configPath)
 
-      if(value === configValue)
+      if(hasValue(value))
       {
         absoluteDirPath = dirpath
       }

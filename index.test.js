@@ -20,7 +20,7 @@ suite('@superhero/config', () =>
     await fs.mkdir(`${configDir}/json`, { recursive: true })
 
     // Create mock config files
-    await fs.writeFile(configFile,      'export default { server: { port: 3000 } }')
+    await fs.writeFile(configFile,      'export default { server: { port: 3000 }, foo: [ "bar", "baz" ] }')
     await fs.writeFile(configFileDev,   JSON.stringify({ app: { environment: 'development' } }))
     await fs.writeFile(configFileJson,  JSON.stringify({ app: { name: 'TestApp' } }))
   })
@@ -120,9 +120,20 @@ suite('@superhero/config', () =>
 
     test('Find absolute directory path by config key-value pair', async () =>
     {
+      const absolutePath = path.resolve(configDir)
+
       await config.add(configFile)
-      const result = config.findAbsoluteDirPathByConfigEntry('server/port', 3000)
-      assert.equal(path.resolve(configDir), result, 'Should find expected directory path')
+      const resultByValue = config.findAbsoluteDirPathByConfigEntry('server/port', 3000)
+      assert.equal(resultByValue, absolutePath, 'Should find expected directory path')
+
+      const resultByArray1 = config.findAbsoluteDirPathByConfigEntry('foo', [ 'bar' ])
+      assert.equal(resultByArray1, absolutePath, 'Should find expected directory path')
+
+      const resultByArray2 = config.findAbsoluteDirPathByConfigEntry('foo', [ 'bar', 'baz' ])
+      assert.equal(resultByArray2, absolutePath, 'Should find expected directory path')
+
+      const resultByArray3 = config.findAbsoluteDirPathByConfigEntry('foo', [ 'bar', 'baz', 'qux' ])
+      assert.equal(resultByArray3, undefined, 'Should not find a directory path')
     })
 
     test('Find a value in the configuration using an escaped slash notation', () =>
