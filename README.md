@@ -9,7 +9,7 @@ A configuration manager for Node.js applications, designed to handle dynamic loa
 - **Deep Assignment and Cloning**: Ensure data integrity with deep cloning and assignment when extending the configurations.
 - **Immutable Configurations**: Freeze configurations to prevent unintended modifications.
 - **Flexible Path Resolution**: Resolve paths dynamically with branch-specific support.
-- **Dot and Slash Notation**: Retrieve nested configuration values using query notations.
+- **Traverse using Slash Notation**: Retrieve nested configuration values using query notations.
 
 ## Installation
 
@@ -52,12 +52,20 @@ await config.add('./config/directory', 'dev');
 
 ### Retrieve Configuration
 
-Use dot or slash notation to access nested values:
+Use slash notation to access nested values:
 
 ```javascript
-const port = config.find('server/port'); // Using slash notation
-const appName = config.find('app.name'); // Using dot notation
-console.log(port, appName);
+const port = config.find('server/port'); // Traverse using slash notation
+console.log(port);
+```
+
+### Retrieve Non Existing Key
+
+Silently fails by returning with an undefined value if the config path is not defined/configured.
+
+```javascript
+const port = config.find('wrong/path/to/server/port');
+console.log(port); // undefiend
 ```
 
 ### Updating Configuration
@@ -117,7 +125,7 @@ Throws:
 ---
 
 ### `find(configPath: string, fallback?: any): any`
-Retrieves a nested configuration value using dot or slash notation.
+Retrieves a nested configuration value using a slash notation.
 
 - `configPath`: Path to the configuration value.
 - `fallback`: Optional fallback value if path is undefined.
@@ -197,47 +205,33 @@ node test
 
 ```
 ▶ @superhero/config
-  ✔ Can be located (4.861409ms)
+  ▶ Add configurations by file
+    ✔ Add a JS config file (6.650687ms)
+    ✔ Add a JSON config file (4.996483ms)
+    ✔ Add a branch-specific config file (2.732737ms)
+    ✔ Throw an error when config file is not found (2.686661ms)
+  ✔ Add configurations by file (19.461934ms)
 
-  ▶ add()
-    ✔ Add a JS config file (3.818644ms)
-    ✔ Add a JSON config file (4.929281ms)
-    ✔ Add a branch-specific config file (2.334197ms)
-    ✔ Throw an error when config file is not found (1.716244ms)
-  ✔ add() (13.529981ms)
+  ▶ Assign configurations
+    ✔ Assign new configuration into existing config (0.735019ms)
+    ✔ Overwrite existing keys during assign (1.107044ms)
+  ✔ Assign configurations (2.161771ms)
 
-  ▶ assign()
-    ✔ Assign new configuration into existing config (0.518567ms)
-    ✔ Overwrite existing keys during assign (0.485986ms)
-  ✔ assign() (1.402759ms)
+  ▶ Make configuration immutable
+    ✔ Freeze the configuration (0.858002ms)
+    ✔ Throw an error when trying to add after freezing (0.651389ms)
+  ✔ Make configuration immutable (1.806803ms)
 
-  ▶ freeze()
-    ✔ Freeze the configuration (0.569616ms)
-    ✔ Throw an error when trying to add after freezing (0.465048ms)
-  ✔ freeze() (1.259649ms)
-
-  ▶ find()
-    ✔ Find a value in the configuration using slash notation (5.097338ms)
-    ✔ Find a value in the configuration using dot notation (3.480747ms)
-    ✔ Return undefined for nonexistent keys (3.146199ms)
-    ✔ Return fallback value for nonexistent keys (1.76582ms)
-    ✔ Do not use the fallback value if key exists in the config (1.406302ms)
-    ✔ Use fallback value to complement configured data structure (1.745534ms)
-  ✔ find() (15.638597ms)
-✔ @superhero/config (52.585458ms)
-
-tests 15
-suites 5
-pass 15
-
-----------------------------------------------------------------
-file            | line % | branch % | funcs % | uncovered lines
-----------------------------------------------------------------
-index.js        |  95.42 |    92.31 |  100.00 | 78-83
-index.test.js   | 100.00 |   100.00 |  100.00 | 
-----------------------------------------------------------------
-all files       |  98.00 |    96.43 |  100.00 | 
-----------------------------------------------------------------
+  ▶ Find configurations
+    ✔ Find a value in the configuration using slash notation (12.074335ms)
+    ✔ Find absolute directory path by config key-value pair (2.93703ms)
+    ✔ Find a value in the configuration using an escaped slash notation (0.710018ms)
+    ✔ Return undefined for nonexistent keys (2.707318ms)
+    ✔ Return fallback value for nonexistent keys (2.531019ms)
+    ✔ Do not use the fallback value if key exists in the config (4.277948ms)
+    ✔ Use fallback value to complement configured data structure (3.00954ms)
+  ✔ Find configurations (29.650847ms)
+✔ @superhero/config (72.570047ms)
 ```
 
 ---

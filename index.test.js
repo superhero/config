@@ -1,7 +1,6 @@
 import assert   from 'node:assert'
-import path     from 'node:path'
 import fs       from 'node:fs/promises'
-import Locator  from '@superhero/locator'
+import path     from 'node:path'
 import Config   from '@superhero/config'
 import { suite, test, before, after, beforeEach } from 'node:test'
 
@@ -31,21 +30,11 @@ suite('@superhero/config', () =>
     await fs.rm(testDir, { recursive: true, force: true })
   })
 
-  let config, locator
+  let config
 
-  beforeEach(() =>
-  {
-    locator = new Locator()
-    config  = new Config()
-  })
+  beforeEach(() => config  = new Config())
 
-  test('Can be located', async () =>
-  {
-    await locator.eagerload({'@superhero/config': path.resolve('./index.js')})
-    assert.ok(locator.locate('@superhero/config'), 'Should be able to locate the config service')
-  })
-
-  suite('add()', () =>
+  suite('Add configurations by file', () =>
   {
     test('Add a JS config file', async () =>
     {
@@ -78,7 +67,7 @@ suite('@superhero/config', () =>
     })
   })
 
-  suite('assign()', () =>
+  suite('Assign configurations', () =>
   {
     test('Assign new configuration into existing config', () =>
     {
@@ -95,7 +84,7 @@ suite('@superhero/config', () =>
     })
   })
 
-  suite('freeze()', () =>
+  suite('Make configuration immutable', () =>
   {
     test('Freeze the configuration', () =>
     {
@@ -120,7 +109,7 @@ suite('@superhero/config', () =>
     })
   })
 
-  suite('find()', () =>
+  suite('Find configurations', () =>
   {
     test('Find a value in the configuration using slash notation', async () =>
     {
@@ -129,11 +118,18 @@ suite('@superhero/config', () =>
       assert.strictEqual(result, 'TestApp', 'Should find value using slash notation')
     })
 
-    test('Find a value in the configuration using dot notation', async () =>
+    test('Find absolute directory path by config key-value pair', async () =>
     {
-      await config.add(configFileJson)
-      const result = config.find('app.name')
-      assert.strictEqual(result, 'TestApp', 'Should find value using dot notation')
+      await config.add(configFile)
+      const result = config.findAbsoluteDirPathByConfigEntry('server/port', 3000)
+      assert.equal(path.resolve(configDir), result, 'Should find expected directory path')
+    })
+
+    test('Find a value in the configuration using an escaped slash notation', () =>
+    {
+      config.assign({ foo: { 'bar/baz': 'qux' }})
+      const result = config.find('foo/bar\\/baz')
+      assert.strictEqual(result, 'qux', 'Should find value using an escaped slash notation')
     })
 
     test('Return undefined for nonexistent keys', async () =>

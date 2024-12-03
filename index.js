@@ -3,17 +3,13 @@ import path         from 'node:path'
 import deep         from '@superhero/deep'
 import PathResolver from '@superhero/path-resolver'
 
-export function locate()
-{
-  return new Config()
-}
-
 export default class Config
 {
   pathResolver = new PathResolver()
 
   #config = {}
   #frozen = false
+  #layers = new Map()
 
   get isFrozen()
   {
@@ -21,15 +17,53 @@ export default class Config
   }
 
   /**
-   * @param {string} configPath
-   * @param {any}    [fallback] if no value was found, then the fallback value is returned
-   * @returns {any}
+   * Finds the configured value by the defiend config path in this instance config state.
+   * @see Config.findInObj
    */
   find(configPath, fallback)
   {
-    // split by unescaped dots or slashes
-    const keys = configPath.split(/(?<!\\)[\.\/]/).map(key => key.replace(/\\([\.\/])/g, '$1'))
-    return deep.merge(fallback, keys.reduce((obj, key) => obj && obj[key], this.#config))
+    return this.findInObj(this.#config, configPath, fallback)
+  }
+
+  /**
+   * @param {object} config
+   * @param {string} configPath
+   * @param {any} [fallback] If no value was found, then the fallback value is returned.
+   * @returns {any}
+   */
+  findInObj(config, configPath, fallback)
+  {
+    // split by unescaped slashes
+    const keys = configPath.split(/(?<!\\)[\/]/).map(key => key.replace(/\\([\/])/g, '$1'))
+    return deep.merge(fallback, keys.reduce((obj, key) => obj && obj[key], config))
+  }
+
+  /**
+   * Finds the last added configuration matching the provided configPath and value and 
+   * returns the absolute directory path where the configuration file that contains the
+   * value was found.
+   * 
+   * @param {string} configPath
+   * @param {any} configValue
+   * 
+   * @returns {string|undefined} The absolute directory path where the configuration 
+   * file was found, or undefined if not found.
+   */
+  findAbsoluteDirPathByConfigEntry(configPath, configValue)
+  {
+    let absoluteDirPath
+
+    for(const [ dirpath, config ] of this.#layers.entries())
+    {
+      const value = this.findInObj(config, configPath)
+
+      if(value === configValue)
+      {
+        absoluteDirPath = dirpath
+      }
+    }
+
+    return absoluteDirPath
   }
 
   assign(config)
@@ -65,12 +99,13 @@ export default class Config
     try
     {
       const
-        resolveFile       = this.#resolveFile.bind(this, branch),
-        resolveDirectory  = this.#resolveDirectory.bind(this, branch),
-        config            = await this.pathResolver.resolve(configpath, resolveFile, resolveDirectory)
+        resolveFile         = this.#resolveFile.bind(this, branch),
+        resolveDirectory    = this.#resolveDirectory.bind(this, branch),
+        [ dirpath, config ] = await this.pathResolver.resolve(configpath, resolveFile, resolveDirectory)
 
       if(config)
       {
+        this.#layers.set(dirpath, config)
         this.assign(config)
       }
       else
@@ -113,7 +148,7 @@ export default class Config
           filepath = path.join(dirpath, file),
           imported = await import(filepath)
   
-        return imported.default
+        return [ dirpath, imported.default ]
       }
     }
 
@@ -123,7 +158,10 @@ export default class Config
         filepath = path.join(dirpath, `config${branch}.json`),
         imported = await import(filepath, { with: { type: 'json' } })
 
-      return imported.default
+      return [ dirpath, imported.default ]
     }
+
+    // no config file found
+    return [ dirpath, null ]
   }
 }

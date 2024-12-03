@@ -1,6 +1,6 @@
 {
   "name": "@superhero/config",
-  "version": "4.0.6",
+  "version": "4.1.0",
   "description": "Manager for a single or multiple configuration files",
   "keywords": [
     "configuration manager"
@@ -14,9 +14,6 @@
   "dependencies": {
     "@superhero/deep": "^4.1.0",
     "@superhero/path-resolver": "^4.0.1"
-  },
-  "devDependencies": {
-    "@superhero/locator": "^4.0.4"
   },
   "scripts": {
     "test": "node --trace-warnings --test --experimental-test-coverage"
