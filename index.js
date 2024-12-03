@@ -18,11 +18,11 @@ export default class Config
 
   /**
    * Finds the configured value by the defiend config path in this instance config state.
-   * @see Config.findInObj
+   * @see Config.traverse
    */
   find(configPath, fallback)
   {
-    return this.findInObj(this.#config, configPath, fallback)
+    return this.traverse(this.#config, configPath, fallback)
   }
 
   /**
@@ -31,7 +31,7 @@ export default class Config
    * @param {any} [fallback] If no value was found, then the fallback value is returned.
    * @returns {any}
    */
-  findInObj(config, configPath, fallback)
+  traverse(config, configPath, fallback)
   {
     // split by unescaped slashes
     const keys = configPath.split(/(?<!\\)[\/]/).map(key => key.replace(/\\([\/])/g, '$1'))
@@ -57,13 +57,13 @@ export default class Config
 
     let absoluteDirPath
 
-    for(const [ dirpath, config ] of this.#layers.entries())
+    for(const [ filepath, config ] of this.#layers.entries())
     {
-      const value = this.findInObj(config, configPath)
+      const value = this.traverse(config, configPath)
 
       if(hasValue(value))
       {
-        absoluteDirPath = dirpath
+        absoluteDirPath = path.dirname(filepath)
       }
     }
 
@@ -103,13 +103,13 @@ export default class Config
     try
     {
       const
-        resolveFile         = this.#resolveFile.bind(this, branch),
-        resolveDirectory    = this.#resolveDirectory.bind(this, branch),
-        [ dirpath, config ] = await this.pathResolver.resolve(configpath, resolveFile, resolveDirectory)
+        resolveFile           = this.#resolveFile.bind(this, branch),
+        resolveDirectory      = this.#resolveDirectory.bind(this, branch),
+        [ filepath, config ]  = await this.pathResolver.resolve(configpath, resolveFile, resolveDirectory)
 
       if(config)
       {
-        this.#layers.set(dirpath, config)
+        this.#layers.set(filepath, config)
         this.assign(config)
       }
       else
@@ -152,7 +152,7 @@ export default class Config
           filepath = path.join(dirpath, file),
           imported = await import(filepath)
   
-        return [ dirpath, imported.default ]
+        return [ filepath, imported.default ]
       }
     }
 
@@ -162,10 +162,10 @@ export default class Config
         filepath = path.join(dirpath, `config${branch}.json`),
         imported = await import(filepath, { with: { type: 'json' } })
 
-      return [ dirpath, imported.default ]
+      return [ filepath, imported.default ]
     }
 
     // no config file found
-    return [ dirpath, null ]
+    return [ null, null ]
   }
 }
