@@ -5,8 +5,6 @@ import PathResolver from '@superhero/path-resolver'
 
 export default class Config
 {
-  pathResolver = new PathResolver()
-
   #config = {}
   #frozen = false
   #layers = new Map()
@@ -14,6 +12,11 @@ export default class Config
   get isFrozen()
   {
     return this.#frozen
+  }
+
+  constructor(pathResolver)
+  {
+    this.pathResolver = pathResolver ?? new PathResolver()
   }
 
   /**

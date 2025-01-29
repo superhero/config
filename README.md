@@ -28,13 +28,6 @@ import Config from '@superhero/config';
 const config = new Config();
 ```
 
-Or resolve using the service locator.
-
-```javascript
-import locator from '@superhero/locator';
-const config = await locator.lazyload('@superhero/config');
-```
-
 ### Load Configuration
 
 #### Add Configuration File
@@ -50,24 +43,6 @@ await config.add('./config/directory');
 await config.add('./config/directory', 'dev'); 
 ```
 
-### Retrieve Configuration
-
-Use slash notation to access nested values:
-
-```javascript
-const port = config.find('server/port'); // Traverse using slash notation
-console.log(port);
-```
-
-### Retrieve Non Existing Key
-
-Silently fails by returning with an undefined value if the config path is not defined/configured.
-
-```javascript
-const port = config.find('wrong/path/to/server/port');
-console.log(port); // undefiend
-```
-
 ### Updating Configuration
 
 #### Assign New Configuration
@@ -79,7 +54,33 @@ config.assign({ app: { version: '1.0.0' } });
 #### Overwrite Existing Values
 
 ```javascript
-config.assign({ app: { name: 'UpdatedApp' } });
+config.assign({ app: { name: 'Some awesome application name' } });
+```
+
+## Retrieve Configuration
+
+Use slash notation to access nested values:
+
+```javascript
+const name = config.find('app/name'); // Traverse using slash notation
+console.log(name); // Some awesome application name
+```
+
+### Retrieve Non Existing Key
+
+Silently fails by returning with an undefined value if the config path is not defined/configured.
+
+```javascript
+const foo = config.find('wrong/path/to/some/configuration');
+console.log(foo); // undefiend
+```
+
+#### Fallback Value
+
+```javascript
+// Return fallback if path is undefined
+const foo = config.find('wrong/path/to/some/configuration', 'foobar');
+console.log(foo); // foobar
 ```
 
 ### Freezing Configuration
@@ -103,9 +104,12 @@ The module provides descriptive error codes to simplify debugging:
 Example:
 
 ```javascript
-try {
+try 
+{
   await config.add('./nonexistent/config.json');
-} catch (error) {
+} 
+catch (error) 
+{
   console.error(error.code, error.message);
 }
 ```
@@ -240,10 +244,10 @@ pass 15
 ----------------------------------------------------------------
 file            | line % | branch % | funcs % | uncovered lines
 ----------------------------------------------------------------
-index.js        |  94.74 |    91.18 |  100.00 | 115-120 167-169
+index.js        |  94.74 |    91.18 |  100.00 | 118-123 170-172
 index.test.js   | 100.00 |   100.00 |  100.00 | 
 ----------------------------------------------------------------
-all files       |  97.29 |    94.83 |  100.00 | 
+all files       |  97.43 |    95.38 |  100.00 | 
 ----------------------------------------------------------------
 ```
 
