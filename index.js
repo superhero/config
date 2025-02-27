@@ -50,13 +50,16 @@ export default class Config
    * @param {any} configValue
    * 
    * @returns {string|undefined} The absolute directory path where the configuration 
-   * file was found, or undefined if not found.
+   * file was last found, or undefined if not found.
    */
   findAbsoluteDirPathByConfigEntry(configPath, configValue)
   {
-    const hasValue = configValue instanceof Array
-              ? (value) => value instanceof Array && configValue.every((input) => value.includes(input))
-              : (value) => value === configValue
+    const partialEquals = (value) => 'object' === typeof configValue
+                                  && 'object' === typeof value
+                                    ? Array.isArray(configValue) && Array.isArray(value) 
+                                      ? configValue.every((configuredValue) => value.includes(configuredValue))
+                                      : Object.keys(configValue).every((key) => configValue[key] === value[key])
+                                    : configValue === value
 
     let absoluteDirPath
 
@@ -64,12 +67,15 @@ export default class Config
     {
       const value = this.traverse(config, configPath)
 
-      if(hasValue(value))
+      if(partialEquals(value))
       {
+        // Returns the absolute directory path of the last matched layer 
+        // where the configuration file was found becouse we don't break
+        // when we find the match.
         absoluteDirPath = path.dirname(filepath)
       }
     }
-
+  
     return absoluteDirPath
   }
 
