@@ -99,7 +99,7 @@ config.assign({ app: { name: 'AnotherApp' } }); // Throws E_CONFIG_FROZEN
 The module provides descriptive error codes to simplify debugging:
 
 - **E_CONFIG_FROZEN**: Thrown when attempting to modify a frozen configuration.
-- **E_CONFIG_ADD**: Thrown when adding a configuration file fails.
+- **E_CONFIG_RESOLVE**: Thrown when adding a configuration file fails.
 
 Example:
 
@@ -116,15 +116,22 @@ catch (error)
 
 ## API Reference
 
-### `add(configpath: string, branch?: string): Promise<void>`
-Loads configuration from the specified file or directory.
+### `resolve(configpath: string, branch?: string): Promise<void>`
+Resolves the configuration from the specified file or directory.
 
 - `configpath`: Path to the configuration file or directory.
 - `branch`: (Optional) Branch-specific configuration suffix.
 
+### `add(filepath: string, config: object): void`
+Assigns the provided `config` object and indexes it by the filepath as a 
+config layer, making it possible to find the original filepath of that 
+configuration to resolve relative paths described in that `config` object.
+
+- `filepath`: Path to the configuration file.
+- `config`: The `config` object.
+
 Throws:
 - **E_CONFIG_FROZEN**: If the configuration is frozen.
-- **E_CONFIG_ADD**: If the configuration cannot be resolved.
 
 ---
 
