@@ -38,21 +38,25 @@ suite('@superhero/config', () =>
   {
     test('Add a JS config file', async () =>
     {
-      await config.add(configFile)
+      const { filepath, config: resolved } = await config.resolve(configFile)
+      console.log('resolved', resolved)
+      config.add(filepath, resolved)
       const result = config.find('server/port')
       assert.strictEqual(result, 3000, 'Should correctly add and resolve JS config')
     })
 
     test('Add a JSON config file', async () =>
     {
-      await config.add(configFileJson)
+      const { filepath, config: resolved } = await config.resolve(configFileJson)
+      config.add(filepath, resolved)
       const result = config.find('app/name')
       assert.strictEqual(result, 'TestApp', 'Should correctly add and resolve JSON config')
     })
 
     test('Add a branch-specific config file', async () =>
     {
-      await config.add(configDir, 'dev')
+      const { filepath, config: resolved } = await config.resolve(configDir, 'dev')
+      config.add(filepath, resolved)
       const result = config.find('app/environment')
       assert.strictEqual(result, 'development', 'Should correctly add branch-specific config')
     })
@@ -61,9 +65,9 @@ suite('@superhero/config', () =>
     {
       const invalidPath = `${configDir}/nonexistent.js`
       await assert.rejects(
-        () => config.add(invalidPath),
-        (error) => error.code === 'E_CONFIG_ADD' && error.cause.code === 'E_RESOLVE_PATH',
-        'Should throw E_CONFIG_ADD with cause E_RESOLVE_PATH')
+        () => config.resolve(invalidPath),
+        (error) => error.code === 'E_CONFIG_RESOLVE' && error.cause.code === 'E_RESOLVE_PATH',
+        'Should throw E_CONFIG_RESOLVE with cause E_RESOLVE_PATH')
     })
   })
 
@@ -101,8 +105,8 @@ suite('@superhero/config', () =>
     test('Throw an error when trying to add after freezing', async () =>
     {
       config.freeze()
-      await assert.rejects(
-        () => config.add(configFile),
+      assert.throws(
+        () => config.assign({ foo: 'bar' }),
         (error) => error.code === 'E_CONFIG_FROZEN',
         'Should throw E_CONFIG_FROZEN when trying to add config after freezing'
       )
@@ -113,7 +117,8 @@ suite('@superhero/config', () =>
   {
     test('Find a value in the configuration using slash notation', async () =>
     {
-      await config.add(configFileJson)
+      const { filepath, config: resolved } = await config.resolve(configFileJson)
+      config.add(filepath, resolved)
       const result = config.find('app/name')
       assert.strictEqual(result, 'TestApp', 'Should find value using slash notation')
     })
@@ -122,7 +127,8 @@ suite('@superhero/config', () =>
     {
       const absolutePath = path.resolve(configDir)
 
-      await config.add(configFile)
+      const { filepath, config: resolved } = await config.resolve(configFile)
+      config.add(filepath, resolved)
       const resultByValue = config.findAbsoluteDirPathByConfigEntry('server/port', 3000)
       assert.equal(resultByValue, absolutePath, 'Should find expected directory path')
 
@@ -145,21 +151,24 @@ suite('@superhero/config', () =>
 
     test('Return undefined for nonexistent keys', async () =>
     {
-      await config.add(configFileJson)
+      const { filepath, config: resolved } = await config.resolve(configFileJson)
+      config.add(filepath, resolved)
       const result = config.find('app/nonexistent/path/and/avalue')
       assert.strictEqual(result, undefined, 'Should return undefined for nonexistent keys')
     })
 
     test('Return fallback value for nonexistent keys', async () =>
     {
-      await config.add(configFileJson)
+      const { filepath, config: resolved } = await config.resolve(configFileJson)
+      config.add(filepath, resolved)
       const result = config.find('app/nonexistent/path/and/avalue', 'fallback')
       assert.strictEqual(result, 'fallback', 'Should return "fallback" for nonexistent keys')
     })
 
     test('Do not use the fallback value if key exists in the config', async () =>
     {
-      await config.add(configFileJson)
+      const { filepath, config: resolved } = await config.resolve(configFileJson)
+      config.add(filepath, resolved)
       const result = config.find('app/name', 'fallback')
       assert.notStrictEqual(result, 'fallback', 'Should not have returned the fallback value')
       assert.strictEqual(result, 'TestApp', 'Should return configured value')
@@ -167,7 +176,8 @@ suite('@superhero/config', () =>
 
     test('Use fallback value to complement configured data structure', async () =>
     {
-      await config.add(configFileJson)
+      const { filepath, config: resolved } = await config.resolve(configFileJson)
+      config.add(filepath, resolved)
       const result = config.find('app', { name: false, foo: 'bar' })
       assert.ok(result.name, 'Should have returned original value')
       assert.ok(result.foo, 'Should have complemented with new fallback attribute')

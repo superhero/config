@@ -1,6 +1,6 @@
 {
   "name": "@superhero/config",
-  "version": "4.1.5",
+  "version": "4.1.6",
   "description": "Manager for a single or multiple configuration files",
   "keywords": [
     "configuration manager"

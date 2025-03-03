@@ -79,6 +79,12 @@ export default class Config
     return absoluteDirPath
   }
 
+  add(filepath, config)
+  {
+    this.assign(config)
+    this.#layers.set(filepath, config)
+  }
+
   assign(config)
   {
     if(this.isFrozen)
@@ -100,15 +106,13 @@ export default class Config
     this.#frozen = true
   }
 
-  async add(configpath, branch = false)
+  has(filepath)
   {
-    if(this.isFrozen)
-    {
-      const error = new Error(`The config instance is in a frozen state`)
-      error.code  = 'E_CONFIG_FROZEN'
-      throw error
-    }
+    return this.#layers.has(filepath)
+  }
 
+  async resolve(configpath, branch = false)
+  {
     try
     {
       const
@@ -118,8 +122,7 @@ export default class Config
 
       if(config)
       {
-        this.#layers.set(filepath, config)
-        this.assign(config)
+        return { filepath, config, branch }
       }
       else
       {
@@ -131,9 +134,9 @@ export default class Config
     catch(reason)
     {
       const error = branch
-                  ? new Error(`Could not add config "${configpath}" using branch "${branch}"`)
-                  : new Error(`Could not add config "${configpath}"`)
-      error.code  = 'E_CONFIG_ADD'
+                  ? new Error(`Could not resolve config "${configpath}" using branch "${branch}"`)
+                  : new Error(`Could not resolve config "${configpath}"`)
+      error.code  = 'E_CONFIG_RESOLVE'
       error.cause = reason
       throw error
     }
