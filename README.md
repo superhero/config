@@ -166,8 +166,10 @@ import locator from '@superhero/locator';
 const config = await locator.lazyload('@superhero/config');
 
 // Load configurations
-await config.add('./config/directory');
-await config.add('./config/directory', 'dev');
+const { filepath, config: resolved } = await config.resolve('./config/directory')
+config.add(filepath, resolved);
+const { filepath, config: resolved } = await config.resolve('./config/directory', 'dev')
+config.add(filepath, resolved);
 
 // Access configuration
 const port = config.find('server/port');
