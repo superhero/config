@@ -54,12 +54,12 @@ export default class Config
    */
   findAbsoluteDirPathByConfigEntry(configPath, configValue)
   {
-    const partialEquals = (value) => 'object' === typeof configValue
-                                  && 'object' === typeof value
-                                    ? Array.isArray(configValue) && Array.isArray(value) 
-                                      ? configValue.every((configuredValue) => value.includes(configuredValue))
-                                      : Object.keys(configValue).every((key) => configValue[key] === value[key])
-                                    : configValue === value
+    const partialEquals = value => 'object' === typeof configValue
+                                && 'object' === typeof value
+                                  ? Array.isArray(configValue) && Array.isArray(value)
+                                    ? configValue.every(configuredValue  => value.includes(configuredValue))
+                                    : Object.keys(configValue).every(key => configValue[key] === value[key])
+                                  : configValue === value
 
     let absoluteDirPath
 
