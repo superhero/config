@@ -42,12 +42,64 @@ export default class Config
   }
 
   /**
+   * Finds the last added configuration matching the provided configPath and returns the absolute 
+   * directory path where the config path was declared.
+   * 
+   * @param {string} configPath
+   * 
+   * @returns {string|undefined} The absolute directory path where the configuration file was last 
+   * found, or undefined if not found.
+   */
+  findAbsoluteDirPathByConfigPath(configPath)
+  {
+    const entries = [ ...this.#layers.entries() ].reverse()
+    for(const [ filepath, config ] of entries)
+    {
+      const value = this.traverse(config, configPath)
+      if(undefined !== value)
+      {
+        // Returns the absolute directory path of the last matched layer where the config path 
+        // was declared. OBS! the reverse order of the layer entries...
+        return path.dirname(filepath)
+      }
+    }
+  }
+
+  /**
+   * Lists the config file path priority where the provided configPath has been declared. 
+   * Prioritised order reflects the reversed order the file with the config path was declared.
+   * 
+   * @param {string} configPath
+   * 
+   * @returns {Generator<{ [key: string]: string }>} } A key/value pair of the absolute directory 
+   * path where the configuration file was found, and the value of the config path declared in that
+   * configuration file.
+   */
+  listPrioritiesedAbsoluteDirPathValuePairByConfigPath(configPath)
+  {
+    const list = []
+
+    for(const [ filepath, config ] of this.#layers.entries())
+    {
+      const value = this.traverse(config, configPath)
+      if(undefined !== value)
+      {
+        // Prepend the prioritised absolute directory path from the matched config layer where the 
+        // config path was declared...
+         list.unshift({ [path.dirname(filepath)] : value })
+      }
+    }
+
+    return list
+  }
+
+  /**
    * Finds the last added configuration matching the provided configPath and value and 
    * returns the absolute directory path where the configuration file that contains the
    * value was found.
    * 
-   * @param {string} configPath
-   * @param {any} configValue
+   * @param {string}  configPath
+   * @param {any}     configValue
    * 
    * @returns {string|undefined} The absolute directory path where the configuration 
    * file was last found, or undefined if not found.
