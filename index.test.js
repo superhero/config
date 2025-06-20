@@ -39,7 +39,6 @@ suite('@superhero/config', () =>
     test('Add a JS config file', async () =>
     {
       const { filepath, config: resolved } = await config.resolve(configFile)
-      console.log('resolved', resolved)
       config.add(filepath, resolved)
       const result = config.find('server/port')
       assert.strictEqual(result, 3000, 'Should correctly add and resolve JS config')
@@ -125,20 +124,20 @@ suite('@superhero/config', () =>
 
     test('Find absolute directory path by config key-value pair', async () =>
     {
-      const absolutePath = path.resolve(configDir)
+      const absolutePath = path.resolve(configFile)
 
       const { filepath, config: resolved } = await config.resolve(configFile)
       config.add(filepath, resolved)
-      const resultByValue = config.findAbsoluteDirPathByConfigEntry('server/port', 3000)
+      const resultByValue = config.findAbsolutePathByConfigEntry('server/port', 3000)
       assert.equal(resultByValue, absolutePath, 'Should find expected directory path')
 
-      const resultByArray1 = config.findAbsoluteDirPathByConfigEntry('foo', [ 'bar' ])
+      const resultByArray1 = config.findAbsolutePathByConfigEntry('foo', [ 'bar' ])
       assert.equal(resultByArray1, absolutePath, 'Should find expected directory path')
 
-      const resultByArray2 = config.findAbsoluteDirPathByConfigEntry('foo', [ 'bar', 'baz' ])
+      const resultByArray2 = config.findAbsolutePathByConfigEntry('foo', [ 'bar', 'baz' ])
       assert.equal(resultByArray2, absolutePath, 'Should find expected directory path')
 
-      const resultByArray3 = config.findAbsoluteDirPathByConfigEntry('foo', [ 'bar', 'baz', 'qux' ])
+      const resultByArray3 = config.findAbsolutePathByConfigEntry('foo', [ 'bar', 'baz', 'qux' ])
       assert.equal(resultByArray3, undefined, 'Should not find a directory path')
     })
 
@@ -181,6 +180,28 @@ suite('@superhero/config', () =>
       const result = config.find('app', { name: false, foo: 'bar' })
       assert.ok(result.name, 'Should have returned original value')
       assert.ok(result.foo, 'Should have complemented with new fallback attribute')
+    })
+
+    test('List prioritised absolute directory path and value pairs by config path', async () =>
+    {
+      const { filepath: filepath1, config: resolved1 } = await config.resolve(configFile)
+      const { filepath: filepath2, config: resolved2 } = await config.resolve(configFileJson)
+
+      config.add(filepath1, resolved1)
+      config.add(filepath2, resolved2)
+
+      assert.deepStrictEqual(config.findAbsolutePathAndValueByConfigPath('server/port'),
+        [[ filepath1, 3000 ]],
+        'Should return entries with absolute dir and value for the given config path')
+
+      config.add('/foobar', resolved2)
+
+      assert.deepStrictEqual(config.findAbsolutePathAndValueByConfigPath('app/name'),
+        [
+          [ '/foobar',  'TestApp' ],
+          [ filepath2,  'TestApp' ]
+        ],
+        'Should return multiple entries with dir and value for the given config path')
     })
   })
 })

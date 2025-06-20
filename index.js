@@ -50,7 +50,7 @@ export default class Config
    * @returns {string|undefined} The absolute directory path where the configuration file was last 
    * found, or undefined if not found.
    */
-  findAbsoluteDirPathByConfigPath(configPath)
+  findAbsolutePathByConfigPath(configPath)
   {
     const entries = [ ...this.#layers.entries() ].reverse()
     for(const [ filepath, config ] of entries)
@@ -60,7 +60,7 @@ export default class Config
       {
         // Returns the absolute directory path of the last matched layer where the config path 
         // was declared. OBS! the reverse order of the layer entries...
-        return path.dirname(filepath)
+        return filepath
       }
     }
   }
@@ -71,26 +71,26 @@ export default class Config
    * 
    * @param {string} configPath
    * 
-   * @returns {Generator<{ [key: string]: string }>} } A key/value pair of the absolute directory 
+   * @returns {Array<Array<string, string>>} Entries structure: pair of the absolute directory 
    * path where the configuration file was found, and the value of the config path declared in that
    * configuration file.
    */
-  listPrioritiesedAbsoluteDirPathValuePairByConfigPath(configPath)
+  findAbsolutePathAndValueByConfigPath(configPath)
   {
-    const list = []
+    const entries = []
 
     for(const [ filepath, config ] of this.#layers.entries())
     {
       const value = this.traverse(config, configPath)
       if(undefined !== value)
       {
-        // Prepend the prioritised absolute directory path from the matched config layer where the 
+        // Prepend the prioritised absolute path from the matched config layer where the 
         // config path was declared...
-         list.unshift({ [path.dirname(filepath)] : value })
+        entries.unshift([ filepath, value ])
       }
     }
 
-    return list
+    return entries
   }
 
   /**
@@ -104,7 +104,7 @@ export default class Config
    * @returns {string|undefined} The absolute directory path where the configuration 
    * file was last found, or undefined if not found.
    */
-  findAbsoluteDirPathByConfigEntry(configPath, configValue)
+  findAbsolutePathByConfigEntry(configPath, configValue)
   {
     const partialEquals = value => 'object' === typeof configValue
                                 && 'object' === typeof value
@@ -124,7 +124,7 @@ export default class Config
         // Returns the absolute directory path of the last matched layer 
         // where the configuration file was found becouse we don't break
         // when we find the match.
-        absoluteDirPath = path.dirname(filepath)
+        absoluteDirPath = filepath
       }
     }
   
