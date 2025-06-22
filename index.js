@@ -133,11 +133,11 @@ export default class Config
 
   add(filepath, config)
   {
-    this.assign(config)
-    this.#layers.set(filepath, config)
+    // backwards compatibility...
+    this.assign(config, filepath)
   }
 
-  assign(config)
+  assign(config, filepath = '')
   {
     if(this.isFrozen)
     {
@@ -149,6 +149,7 @@ export default class Config
     {
       const clone = deep.clone(config)
       deep.assign(this.#config, clone)
+      this.#layers.set(filepath, config)
     }
   }
 
