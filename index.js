@@ -205,29 +205,34 @@ export default class Config
   {
     branch = branch ? `-${branch}` : ''
 
-    const files = await fs.readdir(dirpath)
+    const 
+      files = await fs.readdir(dirpath),
+      name  = `config${branch}`
 
-    for(const suffix of ['js', 'mjs', 'cjs'])
+    for(const filename of [`${name}.js`,  `.${name}.js`, 
+                           `${name}.mjs`, `.${name}.mjs`, 
+                           `${name}.cjs`, `.${name}.cjs`])
     {
-      const file = `config${branch}.${suffix}`
-
-      if(files.includes(file))
+      if(files.includes(filename))
       {
         const 
-          filepath = path.join(dirpath, file),
+          filepath = path.join(dirpath, filename),
           imported = await import(filepath)
   
         return [ filepath, imported.default ]
       }
     }
 
-    if(files.includes(`config${branch}.json`))
+    for(const filename of [`${name}.json`, `.${name}.json`, `.${name}`])
     {
-      const 
-        filepath = path.join(dirpath, `config${branch}.json`),
-        imported = await import(filepath, { with: { type: 'json' } })
-
-      return [ filepath, imported.default ]
+      if(files.includes(filename))
+      {
+        const 
+          filepath = path.join(dirpath, filename),
+          imported = await import(filepath, { with: { type: 'json' } })
+  
+        return [ filepath, imported.default ]
+      }
     }
 
     // no config file found
