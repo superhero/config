@@ -1,6 +1,6 @@
 {
   "name": "@superhero/config",
-  "version": "4.7.24",
+  "version": "4.7.25",
   "description": "Manager for a single or multiple configuration files",
   "keywords": [
     "configuration manager"
@@ -16,11 +16,11 @@
     "test": "syntax-check; node --test --test-reporter=@superhero/audit/reporter --experimental-test-coverage"
   },
   "dependencies": {
-    "@superhero/deep": "4.7.24",
-    "@superhero/path-resolver": "4.7.24"
+    "@superhero/deep": "4.7.25",
+    "@superhero/path-resolver": "4.7.25"
   },
   "devDependencies": {
-    "@superhero/audit": "4.7.24",
+    "@superhero/audit": "4.7.25",
     "@superhero/syntax-check": "0.0.2"
   },
   "author": {
