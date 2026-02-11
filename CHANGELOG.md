@@ -3,6 +3,10 @@
 ---\n\nVersion alignment...
 
 ---
+#### v4.8.3
+---\n\nVersion alignment...
+
+---
 #### v4.8.2
 ---\n\nVersion alignment...
 
